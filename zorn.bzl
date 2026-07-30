@@ -9,8 +9,6 @@ def define_zorn():
     _target_in_tree_modules = target_arch_in_tree_modules + \
         xiaomi_common_in_tree_modules + [
         # keep sorted
-        "drivers/block/zram/zram.ko",
-        "mm/zsmalloc.ko",
         "drivers/input/fingerprint/mi_fp_ultra/mi_fp.ko",
         "drivers/gpio/gpio-mi-t1.ko",
         "drivers/mihw/powersave/powersave.ko",

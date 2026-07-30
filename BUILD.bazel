@@ -965,3 +965,9 @@ ddk_headers(
     visibility = ["//visibility:private"],
 )
 
+ddk_headers(
+    name = "wlan_slab_private_header",
+    hdrs = ["mm/slab.h"],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+)

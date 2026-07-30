@@ -10,7 +10,7 @@ load(
     "merged_kernel_uapi_headers",
 )
 load(
-    "//build:msm_kernel_extensions.bzl",
+    ":msm_kernel_extensions.bzl",
     "define_extras",
     "get_build_config_fragments",
     "get_dtb_list",
@@ -51,7 +51,7 @@ def _define_build_config(
         name = "{}_build_config_bazel".format(target),
         out = "build.config.msm.{}.generated".format(target),
         content = [
-            'KERNEL_DIR="msm-kernel"',
+            'KERNEL_DIR="kernel/xiaomi/sm8650"',
             "VARIANTS=({})".format(" ".join([v.replace("-", "_") for v in le_variants])),
             "MSM_ARCH={}".format(msm_target.replace("-", "_")),
             "VARIANT={}".format(variant.replace("-", "_")),
@@ -97,7 +97,7 @@ def _define_kernel_build(
         dtstree):
     """Creates a `kernel_build` and other associated definitions
 
-    This is where the main kernel build target is created (e.g. `//msm-kernel:kalama_gki`).
+    This is where the main kernel build target is created (e.g. `//kernel/xiaomi/sm8650:kalama_gki`).
     Many other rules will take this `kernel_build` as an input.
 
     Args:
@@ -169,7 +169,7 @@ def _define_kernel_dist(target, msm_target, variant):
         ":{}_build_config".format(target),
         ":{}_dummy_files".format(le_target),
         ":{}_avb_sign_boot_image".format(target),
-        "//msm-kernel:{}_super_image".format(le_target + "_gki"),
+        "//kernel/xiaomi/sm8650:{}_super_image".format(le_target + "_gki"),
     ]
 
     copy_to_dist_dir(
@@ -213,7 +213,7 @@ def define_msm_le(
     if not variant in le_variants:
         fail("{} not defined in target_variants.bzl le_variants!".format(variant))
 
-    # Enforce format of "//msm-kernel:target-foo_variant-bar" (underscore is the delimeter
+    # Enforce format of "//kernel/xiaomi/sm8650:target-foo_variant-bar" (underscore is the delimeter
     # between target and variant)
     target = msm_target.replace("_", "-") + "_" + variant.replace("_", "-")
     le_target = msm_target.split("-")[0]

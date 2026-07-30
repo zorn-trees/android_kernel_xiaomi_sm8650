@@ -14,7 +14,7 @@ load(
     "unsparsed_image",
 )
 load(
-    "//build:msm_kernel_extensions.bzl",
+    ":msm_kernel_extensions.bzl",
     "define_extras",
     "get_build_config_fragments",
     "get_dtb_list",
@@ -59,7 +59,7 @@ def _define_build_config(
         name = "{}_build_config_bazel".format(target),
         out = "build.config.msm.{}.generated".format(target),
         content = [
-            'KERNEL_DIR="msm-kernel"',
+            'KERNEL_DIR="kernel/xiaomi/sm8650"',
             "VARIANTS=({})".format(" ".join(la_variants)),
             "MSM_TARGET={}".format(msm_target.replace("-", "_")),
             "MSM_ARCH={}".format(msm_arch.replace("-", "_")),
@@ -128,7 +128,7 @@ def _define_kernel_build(
         kmi_enforced):
     """Creates a `kernel_build` and other associated definitions
 
-    This is where the main kernel build target is created (e.g. `//msm-kernel:kalama_gki`).
+    This is where the main kernel build target is created (e.g. `//kernel/xiaomi/sm8650:kalama_gki`).
     Many other rules will take this `kernel_build` as an input.
 
     Args:
@@ -473,15 +473,15 @@ def define_msm_la(
     if not variant in la_variants:
         fail("{} not defined in target_variants.bzl la_variants!".format(variant))
 
-    # Enforce format of "//msm-kernel:target-foo_variant-bar" (underscore is the delimeter
+    # Enforce format of "//kernel/xiaomi/sm8650:target-foo_variant-bar" (underscore is the delimeter
     # between target and variant)
     target = msm_target.replace("_", "-") + "_" + variant.replace("_", "-")
 
     if variant == "consolidate":
-        base_kernel = "//common:kernel_aarch64_consolidate"
+        base_kernel = "//kernel/xiaomi/sm8650:kernel_aarch64_consolidate"
         define_abi_targets = False
     else:
-        base_kernel = "//common:kernel_aarch64"
+        base_kernel = "//kernel/xiaomi/sm8650:kernel_aarch64"
         define_abi_targets = True
 
     dtb_list = get_dtb_list(msm_target)

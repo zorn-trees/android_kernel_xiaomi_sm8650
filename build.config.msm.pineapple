@@ -1,8 +1,8 @@
 ################################################################################
 ## Inheriting configs from ACK
 #
-. ${ROOT_DIR}/msm-kernel/build.config.common
-. ${ROOT_DIR}/msm-kernel/build.config.aarch64
+. ${ROOT_DIR}/kernel/xiaomi/sm8650/build.config.common
+. ${ROOT_DIR}/kernel/xiaomi/sm8650/build.config.aarch64
 
 ################################################################################
 ## Variant setup

@@ -11,7 +11,7 @@ load(
     "merged_kernel_uapi_headers",
 )
 load(
-    "//build:msm_kernel_extensions.bzl",
+    ":msm_kernel_extensions.bzl",
     "define_extras",
     "get_build_config_fragments",
     "get_dtb_list",
@@ -26,7 +26,7 @@ load(":image_opts.bzl", "vm_image_opts")
 load(":target_variants.bzl", "vm_variants")
 
 def define_make_vm_dtb_img(target, dtb_list, page_size):
-    compiled_dtbs = ["//msm-kernel:{}/{}".format(target, t) for t in dtb_list]
+    compiled_dtbs = ["//kernel/xiaomi/sm8650:{}/{}".format(target, t) for t in dtb_list]
     dtb_cmd = "compiled_dtb_list=\"{}\"\n".format(" ".join(["$(location {})".format(d) for d in compiled_dtbs]))
     dtb_cmd += """
       $(location //prebuilts/kernel-build-tools:linux-x86/bin/mkdtboimg) \\
@@ -69,7 +69,7 @@ def _define_build_config(
         name = "{}_build_config_bazel".format(target),
         out = "build.config.msm.{}.generated".format(target),
         content = [
-            'KERNEL_DIR="msm-kernel"',
+            'KERNEL_DIR="kernel/xiaomi/sm8650"',
             "VARIANTS=({})".format(" ".join([v.replace("-", "_") for v in vm_variants])),
             "MSM_ARCH={}".format(msm_arch),
             "VARIANT={}".format(variant.replace("-", "_")),
@@ -111,7 +111,7 @@ def _define_kernel_build(
         dtstree):
     """Creates a `kernel_build` and other associated definitions
 
-    This is where the main kernel build target is created (e.g. `//msm-kernel:kalama_gki`).
+    This is where the main kernel build target is created (e.g. `//kernel/xiaomi/sm8650:kalama_gki`).
     Many other rules will take this `kernel_build` as an input.
 
     Args:
@@ -243,7 +243,7 @@ def define_msm_vm(
     if not variant in vm_variants:
         fail("{} not defined in target_variants.bzl vm_variants!".format(variant))
 
-    # Enforce format of "//msm-kernel:target-foo_variant-bar" (underscore is the delimeter
+    # Enforce format of "//kernel/xiaomi/sm8650:target-foo_variant-bar" (underscore is the delimeter
     # between target and variant)
     target = msm_target.replace("_", "-") + "_" + variant.replace("_", "-")
 
