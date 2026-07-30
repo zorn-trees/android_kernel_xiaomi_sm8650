@@ -1,0 +1,25 @@
+What:		/sys/hwid/hwid_project
+Date:		July 2026
+Contact:	weixiaotian1@xiaomi.com
+Description:
+		Read-only hexadecimal Xiaomi hardware project number supplied by
+		the bootloader.
+
+What:		/sys/hwid/hwid_value
+Date:		July 2026
+Contact:	weixiaotian1@xiaomi.com
+Description:
+		Read-only hexadecimal packed Xiaomi hardware revision and country
+		value supplied by the bootloader.
+
+What:		/sys/hwid/hwid_project_adc
+Date:		July 2026
+Contact:	weixiaotian1@xiaomi.com
+Description:
+		Read-only decimal ADC value used for project identification.
+
+What:		/sys/hwid/hwid_build_adc
+Date:		July 2026
+Contact:	weixiaotian1@xiaomi.com
+Description:
+		Read-only decimal ADC value used for build identification.
