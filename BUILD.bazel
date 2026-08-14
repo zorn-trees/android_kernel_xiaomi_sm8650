@@ -966,6 +966,13 @@ ddk_headers(
 )
 
 ddk_headers(
+    name = "devfreq_governor_headers",
+    hdrs = ["drivers/devfreq/governor.h"],
+    includes = ["drivers/devfreq"],
+    visibility = ["//visibility:public"],
+)
+
+ddk_headers(
     name = "wlan_slab_private_header",
     hdrs = ["mm/slab.h"],
     includes = ["include"],
