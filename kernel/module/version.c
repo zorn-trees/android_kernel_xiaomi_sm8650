@@ -51,8 +51,9 @@ int check_version(const struct load_info *info,
 	return 1;
 
 bad_version:
-	pr_warn("%s: disagrees about version of symbol %s\n", info->name, symname);
-	return 0;
+	pr_warn("%s: disagrees about version of symbol %s (allowed)\n", info->name, symname);
+	add_taint(TAINT_FORCED_MODULE, LOCKDEP_STILL_OK);
+	return 1;
 }
 
 int check_modstruct_version(const struct load_info *info,

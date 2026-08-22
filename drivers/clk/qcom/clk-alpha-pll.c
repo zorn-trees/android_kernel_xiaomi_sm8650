@@ -420,60 +420,27 @@ void clk_alpha_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
 	if (pll_alpha_width(pll) > 32)
 		regmap_write(regmap, PLL_ALPHA_VAL_U(pll), config->alpha_hi);
 
-	if (config->main_output_mask || config->aux_output_mask ||
-		config->aux2_output_mask || config->early_output_mask ||
-		config->pre_div_val || config->vco_val ||
-		config->alpha_en_mask) {
-		val = config->main_output_mask;
-		val |= config->aux_output_mask;
-		val |= config->aux2_output_mask;
-		val |= config->early_output_mask;
-		val |= config->pre_div_val;
-		val |= config->vco_val;
-		val |= config->alpha_en_mask;
+	val = config->main_output_mask;
+	val |= config->aux_output_mask;
+	val |= config->aux2_output_mask;
+	val |= config->early_output_mask;
+	val |= config->pre_div_val;
+	val |= config->post_div_val;
+	val |= config->vco_val;
+	val |= config->alpha_en_mask;
+	val |= config->alpha_mode_mask;
 
-		mask = config->main_output_mask;
-		mask |= config->aux_output_mask;
-		mask |= config->aux2_output_mask;
-		mask |= config->early_output_mask;
-		mask |= config->pre_div_mask;
-		mask |= config->vco_mask;
-		mask |= config->alpha_en_mask;
+	mask = config->main_output_mask;
+	mask |= config->aux_output_mask;
+	mask |= config->aux2_output_mask;
+	mask |= config->early_output_mask;
+	mask |= config->pre_div_mask;
+	mask |= config->post_div_mask;
+	mask |= config->vco_mask;
+	mask |= config->alpha_en_mask;
+	mask |= config->alpha_mode_mask;
 
-		regmap_update_bits(regmap, PLL_USER_CTL(pll), mask, val);
-	}
-
-	if (config->post_div_mask) {
-		mask = config->post_div_mask;
-		val = config->post_div_val;
-		regmap_update_bits(regmap, PLL_USER_CTL(pll), mask, val);
-	}
-
-	 /* Do not bypass the latch interface */
-	if (pll->flags & SUPPORTS_SLEW)
-		regmap_update_bits(regmap, PLL_USER_CTL_U(pll),
-		PLL_LATCH_INTERFACE, (u32)~PLL_LATCH_INTERFACE);
-
-	if (pll->flags & SUPPORTS_DYNAMIC_UPDATE) {
-		regmap_update_bits(regmap, PLL_MODE(pll),
-				PLL_UPDATE_BYPASS,
-				PLL_UPDATE_BYPASS);
-	}
-
-	if (config->test_ctl_mask) {
-		mask = config->test_ctl_mask;
-		val = config->test_ctl_val;
-		regmap_update_bits(regmap, PLL_TEST_CTL(pll), mask, val);
-	}
-
-	if (config->test_ctl_hi_mask) {
-		mask = config->test_ctl_hi_mask;
-		val = config->test_ctl_hi_val;
-		regmap_update_bits(regmap, PLL_TEST_CTL_U(pll), mask, val);
-	}
-	if (pll->flags & SUPPORTS_DYNAMIC_UPDATE)
-		regmap_update_bits(regmap, PLL_MODE(pll), PLL_UPDATE_BYPASS,
-					PLL_UPDATE_BYPASS);
+	regmap_update_bits(regmap, PLL_USER_CTL(pll), mask, val);
 
 	if (pll->flags & SUPPORTS_FSM_MODE)
 		qcom_pll_set_fsm_mode(regmap, PLL_MODE(pll), 6, 0);
@@ -2297,7 +2264,7 @@ static int __alpha_pll_trion_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ret < 0)
 		return ret;
 
-	regmap_write(pll->clkr.regmap, PLL_L_VAL(pll), l);
+	regmap_update_bits(pll->clkr.regmap, PLL_L_VAL(pll), LUCID_EVO_PLL_L_VAL_MASK,  l);
 	regmap_write(pll->clkr.regmap, PLL_ALPHA_VAL(pll), a);
 
 	if (pll->flags & BYPASS_LATCH) {

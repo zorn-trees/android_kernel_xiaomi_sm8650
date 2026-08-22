@@ -273,8 +273,7 @@ enum rt_fastpaths {
 static void walt_select_task_rq_rt(void *unused, struct task_struct *task, int cpu,
 					int sd_flag, int wake_flags, int *new_cpu)
 {
-	struct task_struct *curr;
-	struct rq *rq, *this_cpu_rq;
+	struct rq *this_cpu_rq;
 	bool may_not_preempt;
 	bool sync = !!(wake_flags & WF_SYNC);
 	int ret, target = -1, this_cpu;
@@ -313,11 +312,6 @@ static void walt_select_task_rq_rt(void *unused, struct task_struct *task, int c
 
 
 	*new_cpu = cpu; /* previous CPU as back up */
-	rq = cpu_rq(cpu);
-
-	rcu_read_lock();
-	curr = READ_ONCE(rq->curr); /* unlocked access */
-
 	/*
 	 * If the current task on @p's runqueue is a softirq task,
 	 * it may run without preemption for a time that is
@@ -334,7 +328,7 @@ static void walt_select_task_rq_rt(void *unused, struct task_struct *task, int c
 	 * requirement of the task - which is only important on heterogeneous
 	 * systems like big.LITTLE.
 	 */
-	may_not_preempt = task_may_not_preempt(curr, cpu);
+	may_not_preempt = cpu_busy_with_softirqs(cpu);
 
 	lowest_mask = this_cpu_cpumask_var_ptr(walt_local_cpu_mask);
 
@@ -351,7 +345,7 @@ static void walt_select_task_rq_rt(void *unused, struct task_struct *task, int c
 	if (packing_cpu >= 0) {
 		fastpath = CLUSTER_PACKING_FASTPATH;
 		*new_cpu = packing_cpu;
-		goto unlock;
+		goto out;
 	}
 
 	cpumask_and(&lowest_mask_reduced, lowest_mask, &wts->reduce_mask);
@@ -380,8 +374,6 @@ static void walt_select_task_rq_rt(void *unused, struct task_struct *task, int c
 		if (target < nr_cpu_ids)
 			*new_cpu = target;
 	}
-unlock:
-	rcu_read_unlock();
 out:
 	trace_sched_select_task_rt(task, fastpath, *new_cpu, lowest_mask);
 }

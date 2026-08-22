@@ -875,7 +875,6 @@ static int (*staling_mode_ops[LLCC_STALING_MODE_MAX])(u32, struct llcc_staling_m
  */
 int llcc_configure_staling_mode(struct llcc_slice_desc *desc,
 				struct llcc_staling_mode_params *p)
-
 {
 	u32 sid;
 	enum llcc_staling_mode m;
@@ -897,7 +896,6 @@ int llcc_configure_staling_mode(struct llcc_slice_desc *desc,
 	 * with the params passed
 	 */
 	return (*staling_mode_ops[m])(sid, p);
-
 }
 EXPORT_SYMBOL(llcc_configure_staling_mode);
 

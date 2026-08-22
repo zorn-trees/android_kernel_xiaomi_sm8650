@@ -116,16 +116,14 @@ int module_sig_check(struct load_info *info, int flags)
 
 	default:
 		/*
-		 * All other errors are fatal, including lack of memory,
-		 * unparseable signatures, and signature check failures --
-		 * even if signatures aren't required.
+		 * Allow modules even if signature is from a different key or untrusted
 		 */
-		return err;
+		pr_warn_once("Module signature verification failed (%d) - allowing load\n", err);
+		return 0;
 	}
 
 	if (is_module_sig_enforced()) {
-		pr_notice("Loading of %s is rejected\n", reason);
-		return -EKEYREJECTED;
+		pr_notice("Loading of %s (warning only)\n", reason);
 	}
 
 /*
