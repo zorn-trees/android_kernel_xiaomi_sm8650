@@ -244,7 +244,11 @@ ld_flags       = $(KBUILD_LDFLAGS) $(ldflags-y) $(LDFLAGS_$(@F))
 
 # ANDROID: Allow DTC_INCLUDE to be set by the BUILD_CONFIG. This allows one to
 # compile an out-of-tree device tree.
+ifndef CONFIG_ARCH_MXR
 DTC_INCLUDE    += $(srctree)/scripts/dtc/include-prefixes $(KBUILD_DTC_INCLUDE)
+else
+DTC_INCLUDE    += $(srctree)/scripts/dtc/include-prefixes
+endif
 
 dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp -nostdinc                    \
 		 $(addprefix -I,$(DTC_INCLUDE))                          \
@@ -338,6 +342,9 @@ quiet_cmd_gzip = GZIP    $@
 DTC ?= $(objtree)/scripts/dtc/dtc
 DTC_FLAGS += -Wno-interrupt_provider
 
+# Silence all DTC warnings by default
+DTC_FLAGS += -q
+
 # Disable noisy checks by default
 ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
 DTC_FLAGS += -Wno-unit_address_vs_reg \
@@ -356,8 +363,13 @@ endif
 
 DTC_FLAGS += $(DTC_FLAGS_$(basetarget))
 
+ifeq ($(CONFIG_ARCH_QCOM),y)
+# Forcibly set -@ for all DTB[O]s in case of QCOM targets
+DTC_FLAGS += -@
+else
 # Set -@ if the target is a base DTB that overlay is applied onto
 DTC_FLAGS += $(if $(filter $(patsubst $(obj)/%,%,$@), $(base-dtb-y)), -@)
+endif
 
 # Generate an assembly file to wrap the output of the device tree compiler
 quiet_cmd_dt_S_dtb= DTB     $@
@@ -412,6 +424,9 @@ $(obj)/%.dtb: $(src)/%.dts $(DTC) $(DT_TMP_SCHEMA) FORCE
 	$(call if_changed_dep,dtb)
 
 $(obj)/%.dtbo: $(src)/%.dts $(DTC) FORCE
+	$(call if_changed_dep,dtc)
+
+$(obj)/%.dtbo: $(src)/%.dtso $(DTC) FORCE
 	$(call if_changed_dep,dtc)
 
 dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
