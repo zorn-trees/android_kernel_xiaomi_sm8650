@@ -1263,8 +1263,12 @@ endif
 	$(Q)$(MAKE) $(hdr-inst)=$(hdr-prefix)include/uapi
 	$(Q)$(MAKE) $(hdr-inst)=$(hdr-prefix)arch/$(SRCARCH)/include/uapi
 	$(Q)for d in $(ext-mod-dirs); do \
-		$(MAKE) $(hdr-inst)=$$d/include/uapi; \
+		$(MAKE) $(hdr-inst)=$$d/include/uapi \
+			dst=usr/ext-include/$$(echo $$d | tr '/.' '__'); \
 	done
+	$(Q)for d in usr/ext-include/*/; do \
+		[ -d "$$d" ] && cp -a "$$d." usr/include/; \
+	done; true
 
 # ---------------------------------------------------------------------------
 # Devicetree files
